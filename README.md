@@ -19,3 +19,4 @@ This will ask prompt you to log in with the Microsoft 365 admin account it will 
 2. Remove all liceneses from the user
 3. Block the user from signing in
 
+If the upn is not entered in the command then it will propmt for it before continuing
