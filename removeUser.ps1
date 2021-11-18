@@ -5,6 +5,9 @@
 # this will convert their mailbox to a shared mailbox
 # remove all their licenses and block their sign in
 
+#params
+param($upn)
+
 Connect-ExchangeOnline
 
 #if no upn is supllied it asks for one
