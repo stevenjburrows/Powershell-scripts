@@ -6,17 +6,32 @@
 # User for when people leave a company
 # this will convert their mailbox to a shared mailbox
 # remove all their licenses and block their sign in
+# use -message to add an auto reply to the shared mailbox as well
 
 #params
-param($upn, [switch]$login, $message)
+param(
+    $upn, 
+    [switch]$login, 
+    $message,
+    [switch]$install
+    )
 
+if($install){
+    Get-InstalledModule Microsoft.Graph
+    Write-host "Installed Microsoft.Graph" -BackgroundColor Green -ForegroundColor White
 
+    Install-Module MSOnline
+    Write-host "Installed MSOnline" -BackgroundColor Green -ForegroundColor White
+
+    Install-Module ExchangeOnline
+    Write-host "Installed ExchangeOnline" -BackgroundColor Green -ForegroundColor White
+}
 #if no upn is supllied it asks for one
-if ($upn -eq $null) {
+if ($null -eq $upn) {
 $upn = read-host -Prompt "Please enter a upn or email address" 
 }
 
-if($login -ne $null) {
+if($login -eq $true) {
 Connect-MsolService
 Connect-ExchangeOnline
 }
@@ -27,7 +42,7 @@ Write-host "converted to a shared mailbox" -BackgroundColor Red -ForegroundColor
 
 #removes all licenses
 (get-MsolUser -UserPrincipalName $upn).licenses.AccountSkuId |
-foreach{
+ForEach-Object{
     Set-MsolUserLicense -UserPrincipalName $upn -RemoveLicenses $_
 }
 
@@ -37,7 +52,7 @@ Set-MsolUser -UserPrincipalName $upn  -BlockCredential $true
 
 Write-host "sign in blocked" -BackgroundColor Red -ForegroundColor White
 
-if($message -ne $null){
+if($null -ne $message){
 Set-MailboxAutoReplyConfiguration -Identity $upn -AutoReplyState Enabled -InternalMessage $message
 Write-host "Auto reply added" -BackgroundColor Red -ForegroundColor White
 }
